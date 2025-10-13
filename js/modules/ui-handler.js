@@ -15,9 +15,10 @@ const canvases = [
 /**
  * Initializes the UI controls, setting default values and attaching event listeners.
  * @param {object} options
- * @param {function} options.onGenerate - The callback function to execute when the generate button is clicked.
+ * @param {function} options.onGenerate - Callback for the "Generate" button.
+ * @param {function} options.onExport - Callback for the "Export" button.
  */
-export function initUI({ onGenerate }) {
+export function initUI({ onGenerate, onExport }) {
     // Set default year to the current year
     yearInput.value = new Date().getFullYear();
 
@@ -26,6 +27,9 @@ export function initUI({ onGenerate }) {
 
     // Also trigger generation when a new image is selected
     imageUpload.addEventListener('change', onGenerate);
+
+    // Attach event listener to the export button
+    exportPdfBtn.addEventListener('click', onExport);
 }
 
 /**
@@ -45,4 +49,18 @@ export function getUIState() {
  */
 export function setExportButtonEnabled(enabled) {
     exportPdfBtn.disabled = !enabled;
+}
+
+/**
+ * Sets the state of the export button to indicate it's busy.
+ * @param {boolean} isBusy - True to show "Exporting...", false to revert to "Export to PDF".
+ */
+export function setExportButtonBusy(isBusy) {
+    if (isBusy) {
+        exportPdfBtn.disabled = true;
+        exportPdfBtn.textContent = 'Exporting...';
+    } else {
+        exportPdfBtn.disabled = false;
+        exportPdfBtn.textContent = 'Export to PDF';
+    }
 }

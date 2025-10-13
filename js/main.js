@@ -1,5 +1,6 @@
-import { initUI, getUIState, setExportButtonEnabled } from './modules/ui-handler.js';
+import { initUI, getUIState, setExportButtonEnabled, setExportButtonBusy } from './modules/ui-handler.js';
 import { drawCalendarPage } from './modules/canvas-drawer.js';
+import { generatePdf } from './modules/pdf-generator.js';
 
 // This will hold the loaded image object.
 let userImage = null;
@@ -59,10 +60,29 @@ async function generateCalendar() {
 }
 
 /**
+ * Handles the PDF export process.
+ */
+async function exportCalendar() {
+    console.log("Exporting to PDF...");
+    setExportButtonBusy(true);
+
+    const { year, canvases } = getUIState();
+
+    try {
+        await generatePdf({ canvases, year });
+    } catch (error) {
+        console.error("Failed to export PDF:", error);
+        alert("An error occurred while exporting the PDF. Please try again.");
+    } finally {
+        setExportButtonBusy(false);
+    }
+}
+
+/**
  * Initializes the application.
  */
 function main() {
-    initUI({ onGenerate: generateCalendar });
+    initUI({ onGenerate: generateCalendar, onExport: exportCalendar });
     generateCalendar(); // Generate calendar for the current year on page load
 }
 
