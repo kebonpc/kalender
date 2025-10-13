@@ -12,7 +12,31 @@
     </header>
 
     <main id="app">
-        <!-- UI Controls and Canvas Previews will be added here in Phase 2 -->
+        <section class="controls">
+            <h2>Settings</h2>
+            <div class="control-group">
+                <label for="year-input">Calendar Year:</label>
+                <input type="number" id="year-input" name="year">
+            </div>
+            <div class="control-group">
+                <label for="image-upload">Header Image:</label>
+                <input type="file" id="image-upload" name="image" accept="image/*">
+            </div>
+            <div class="button-group">
+                <button id="generate-btn">Generate Calendar</button>
+                <button id="export-pdf-btn" disabled>Export to PDF</button>
+            </div>
+        </section>
+
+        <section class="preview-area">
+            <h2>Preview</h2>
+            <div id="canvas-container">
+                <canvas id="page-1" width="1240" height="1754"></canvas> <!-- A4 at 150 DPI -->
+                <canvas id="page-2" width="1240" height="1754"></canvas>
+                <canvas id="page-3" width="1240" height="1754"></canvas>
+                <canvas id="page-4" width="1240" height="1754"></canvas>
+            </div>
+        </section>
     </main>
 
     <script src="js/main.js" type="module"></script>

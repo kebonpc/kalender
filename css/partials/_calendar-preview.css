@@ -1,0 +1,19 @@
+/* Styles for the canvas preview area */
+
+.preview-area {
+    flex: 3;
+    min-width: 400px;
+}
+
+#canvas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+canvas {
+    max-width: 100%;
+    height: auto;
+    background-color: white;
+    box-shadow: 0 2px 8px hsla(0, 0%, 0%, 0.15);
+}

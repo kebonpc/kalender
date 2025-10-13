@@ -1,0 +1,42 @@
+/* Styles for UI controls (buttons, inputs) */
+
+.controls {
+    flex: 1;
+    min-width: 300px;
+    background-color: hsl(0 0% 100%);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px hsla(0, 0%, 0%, 0.1);
+    align-self: flex-start; /* Prevents stretching */
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+input[type="number"],
+input[type="file"],
+button {
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    border: 1px solid hsl(0 0% 80%);
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
