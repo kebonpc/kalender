@@ -23,6 +23,12 @@
 
 body {
     margin: 0;
+    display: grid;
+    /* Mobile-first: default to a single column */
+    grid-template-columns: 1fr;
+    height: auto;
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,49 +41,158 @@ body {
     }
 }
 
-header, main {
-    padding: var(--spacing-md) calc(var(--spacing-md) * 2);
-}
-
-.header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-#toggle-sidebar-btn {
-    font-size: 1.5rem;
-    padding: 0.25rem 0.75rem;
-    background-color: var(--surface-color);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-}
-
-#app {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: calc(var(--spacing-md) * 2);
-    align-items: flex-start;
-    transition: gap 200ms ease-in-out;
-}
-#app.sidebar-collapsed #sidebar {
-    min-width: 0;
-    width: 0;
-    flex: 0;
-    transform: translateX(100%);
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
-}
-
 #sidebar {
-    flex: 1;
-    min-width: 320px;
+    display: grid;
+    grid-template-rows: 1fr auto; /* Content area | Footer */
+    height: 100%;
+    overflow-y: auto; /* Make the entire sidebar scrollable if content overflows */
+    background-color: var(--surface-color);
+    border-left: 1px solid var(--border-color);
+    padding: 0 var(--spacing-lg) var(--spacing-lg);
     transition: all 200ms ease-in-out;
-    transform: translateX(0);
-    /* These properties are moved to _controls.css */
+}
+
+/* --- Sidebar Panel Navigation --- */
+.sidebar-panel {
+    display: none; /* Hidden by default */
+    grid-row: 1 / 2; /* All panels occupy the first row */
+    /* Scrolling is now handled by the parent #sidebar */
+}
+
+.sidebar-panel.active {
+    display: grid; /* Visible when active */
+    gap: var(--spacing-lg);
+    align-content: start; /* Aligns content to the top */
+}
+
+.sidebar-header {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center; /* Flex is still best for simple alignment */
+    padding-top: var(--spacing-lg); /* Add padding to the top of the header */
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h2,
+.sidebar-header h3 {
+    margin: 0;
+}
+
+.back-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.back-btn::before {
+    content: '‹';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    line-height: 1;
+    font-weight: bold;
+}
+
+.sidebar-nav {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+/* --- Sidebar Footer & Action Buttons --- */
+.sidebar-footer {
+    grid-row: 2 / 3; /* Place footer in the second row */
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+.sidebar-footer button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+}
+
+.sidebar-footer button:hover:not(:disabled) {
+    background-color: var(--accent-color-hover);
 }
 
 .hidden {
     display: none;
+}
+
+/* --- Mobile Toggle Button --- */
+#mobile-sidebar-toggle {
+    display: none; /* Hidden by default, shown on mobile */
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1001;
+    width: 48px;
+    height: 48px;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    cursor: pointer;
+}
+
+#mobile-sidebar-toggle::before {
+    content: '⚙️'; /* Settings gear icon */
+    font-size: 24px;
+}
+
+/* --- Responsive Styles --- */
+@media (max-width: 768px) {
+    /* On mobile, the sidebar becomes a transparent overlay */
+    #sidebar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 90vw;
+        max-width: 320px;
+        height: 100%;
+        z-index: 1000;
+        background-color: hsla(0, 0%, 15%, 0.75); /* More transparent dark background */
+        backdrop-filter: blur(8px);
+        transform: translateX(100%); /* Hidden by default */
+        transition: transform 300ms ease-in-out;
+    }
+
+    #sidebar.visible {
+        transform: translateX(0); /* Shown when .visible class is added */
+    }
+
+    #mobile-sidebar-toggle {
+        display: block; /* Show the toggle button */
+    }
+}
+
+@media (min-width: 769px) {
+    /* Apply two-column layout only on larger screens */
+    body {
+        grid-template-columns: 1fr 320px;
+        height: calc(var(--vh, 1vh) * 100);
+        overflow: hidden;
+    }
+
+    #sidebar {
+        grid-column: 2 / 3;
+        height: 100%;
+        overflow-y: auto; /* Make the entire sidebar scrollable if content overflows */
+    }
+
+    .preview-area {
+        height: 100%;
+        min-height: 0; /* Reset mobile min-height */
+    }
 }

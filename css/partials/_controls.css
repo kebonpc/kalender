@@ -1,16 +1,3 @@
-#sidebar {
-    position: sticky;
-    top: var(--spacing-lg);
-    height: calc(100vh - var(--spacing-lg) * 2); /* Full viewport height minus padding */
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    padding-left: 0.5rem; /* Space for the scrollbar */
-    padding-right: var(--spacing-md); /* Space on the right */
-    padding-bottom: var(--spacing-lg); /* Space at the bottom */
-}
-
 /* Styles for UI controls (buttons, inputs) */
 .controls {
     /* Remove card styling to unify the sidebar */
@@ -20,8 +7,7 @@
 }
 
 .control-group {
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: calc(var(--spacing-md) / 2);
     margin-bottom: var(--spacing-lg);
 }
@@ -54,7 +40,8 @@ button:focus-visible {
 }
 
 .button-group {
-    display: flex;
+    display: grid;
+    grid-auto-flow: column;
     gap: var(--spacing-md);
     margin-top: var(--spacing-md);
 }
@@ -87,36 +74,14 @@ button:disabled {
     display: none;
 }
 
-/* --- Sidebar Toggle Button --- */
-#toggle-sidebar-btn {
-    position: absolute;
-    top: 0;
-    right: 0; /* Position on the right edge of the screen */
-    z-index: 1001; /* Above sidebar, below loading overlay */
-    width: 3rem;
-    height: 3rem;
-    padding: 0;
-    border: 1px solid var(--border-color);
-    background-color: var(--bg-color);
-    border-radius: var(--border-radius);
-    box-shadow: 0 1px 3px var(--shadow-color);
-    transition: transform 300ms ease-in-out, background-color 150ms ease-in-out;
-    font-size: 1.2rem;
+.slider-input-wrapper {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--spacing-md);
+    align-items: center;
 }
 
-#toggle-sidebar-btn:hover {
-    background-color: var(--bg-color-alt);
-}
-
-#toggle-sidebar-btn::after {
-    content: '▶'; /* Arrow points left when sidebar is open */
-    color: var(--text-color);
-}
-
-.sidebar-collapsed #toggle-sidebar-btn {
-    /* No change in position, just the icon */
-}
-
-.sidebar-collapsed #toggle-sidebar-btn::after {
-    content: '☰'; /* Hamburger icon when sidebar is closed */
+.slider-input-wrapper input[type="number"] {
+    width: 60px;
+    text-align: center;
 }

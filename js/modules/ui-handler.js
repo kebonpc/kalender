@@ -4,7 +4,6 @@ const NOW = new Date();
 
 // Get references to all the important DOM elements
 const yearInput = document.getElementById('year-input');
-const appContainer = document.getElementById('app');
 const generateBtn = document.getElementById('generate-btn');
 const exportPdfBtn = document.getElementById('export-pdf-btn');
 const customHolidaysTextarea = document.getElementById('custom-holidays');
@@ -16,7 +15,16 @@ const imageUploadInput = document.getElementById('image-upload-input');
 const scaleSlider = document.getElementById('image-scale');
 const xSlider = document.getElementById('image-x');
 const ySlider = document.getElementById('image-y');
+const scaleNumberInput = document.getElementById('image-scale-number');
+const xNumberInput = document.getElementById('image-x-number');
+const yNumberInput = document.getElementById('image-y-number');
 const loadingOverlay = document.getElementById('loading-overlay');
+const mobileToggleBtn = document.getElementById('mobile-sidebar-toggle');
+
+// Sidebar navigation elements
+const sidebarPanels = document.querySelectorAll('.sidebar-panel');
+const navButtons = document.querySelectorAll('.sidebar-nav button');
+const backButtons = document.querySelectorAll('.back-btn');
 
 const canvases = [
     document.getElementById('page-1'),
@@ -47,22 +55,43 @@ function debounce(func, wait) {
 }
 
 /**
+ * Switches the visible sidebar panel.
+ * @param {string} panelId The ID of the panel to show.
+ */
+function navigateToPanel(panelId) {
+    sidebarPanels.forEach(panel => {
+        panel.classList.remove('active');
+    });
+    const targetPanel = document.getElementById(panelId);
+    if (targetPanel) {
+        targetPanel.classList.add('active');
+    }
+}
+
+/**
+ * Sets a CSS variable for the actual viewport height to solve mobile browser issues.
+ */
+function setViewportHeight() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+/**
  * Initializes the UI controls, setting default values and attaching event listeners.
  * @param {object} options
  * @param {function} options.onGenerate - Callback for the "Generate" button click.
  * @param {function} options.onExport - Callback for the "Export" button.
  */
 export function initUI({ onGenerate, onExport }) {
+    // Set the viewport height variable on load and on resize
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+
     // Set default year to the current year
     yearInput.value = NOW.getFullYear();
 
     // Attach event listener to the generate button
     generateBtn.addEventListener('click', onGenerate);
-
-    // Handle sidebar toggle
-    document.getElementById('toggle-sidebar-btn').addEventListener('click', () => {
-        appContainer.classList.toggle('sidebar-collapsed');
-    });
 
     // Programmatically click the hidden file input
     uploadImageBtn.addEventListener('click', () => {
@@ -102,12 +131,47 @@ export function initUI({ onGenerate, onExport }) {
             debouncedGenerate();
         });
     });
+
+    // --- Two-way binding for sliders and number inputs ---
+    const sliderNumberPairs = [
+        [scaleSlider, scaleNumberInput, 'float'],
+        [xSlider, xNumberInput, 'int'],
+        [ySlider, yNumberInput, 'int']
+    ];
+
+    sliderNumberPairs.forEach(([slider, numberInput, type]) => {
+        const parser = type === 'float' ? parseFloat : parseInt;
+        slider.addEventListener('input', () => numberInput.value = slider.value);
+        numberInput.addEventListener('input', () => slider.value = parser(numberInput.value));
+    });
+
+
+    // --- Sidebar Navigation Logic ---
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetPanelId = button.dataset.targetPanel;
+            navigateToPanel(targetPanelId);
+        });
+    });
+
+    backButtons.forEach(button => {
+        button.addEventListener('click', () => navigateToPanel('sidebar-main-menu'));
+    });
+
+    // --- Mobile Sidebar Toggle ---
+    mobileToggleBtn.addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('visible');
+    });
 }
 
 function updateSlidersFromTransform(transform) {
     scaleSlider.value = transform.scale;
     xSlider.value = transform.x;
     ySlider.value = transform.y;
+
+    scaleNumberInput.value = transform.scale;
+    xNumberInput.value = transform.x;
+    yNumberInput.value = transform.y;
 }
 
 function updateTransformFromSliders(transform) {

@@ -8,81 +8,89 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <main id="app">
-        <section class="preview-area">
-            <h2>Kalender Generator</h2>
-            <button id="toggle-sidebar-btn" title="Buka/Tutup Sidebar"></button>
-            <div id="loading-overlay" class="hidden">
-                <div class="spinner"></div>
-                <span>Membuat Kalender...</span>
-            </div>
-            <div id="canvas-container">
-                <canvas id="page-1" width="1240" height="1754"></canvas> <!-- A4 at 150 DPI -->
-                <canvas id="page-2" width="1240" height="1754"></canvas>
-                <canvas id="page-3" width="1240" height="1754"></canvas>
-                <canvas id="page-4" width="1240" height="1754"></canvas>
-                <canvas id="page-5" width="1240" height="1754"></canvas>
-                <canvas id="page-6" width="1240" height="1754"></canvas>
-            </div>
-        </section>
+    <section class="preview-area">
+        <div id="loading-overlay" class="hidden">
+            <div class="spinner"></div>
+            <span>Membuat Kalender...</span>
+        </div>
+        <div id="canvas-container">
+            <canvas id="page-1" width="1240" height="1754"></canvas> <!-- A4 at 150 DPI -->
+            <canvas id="page-2" width="1240" height="1754"></canvas>
+            <canvas id="page-3" width="1240" height="1754"></canvas>
+            <canvas id="page-4" width="1240" height="1754"></canvas>
+            <canvas id="page-5" width="1240" height="1754"></canvas>
+            <canvas id="page-6" width="1240" height="1754"></canvas>
+        </div>
+    </section>
 
-        <aside id="sidebar">
-            <section class="controls">
-                <h2>Pengaturan</h2>
-                <div class="control-group">
-                    <label for="year-input">Tahun Kalender:</label>
-                    <input type="number" id="year-input" name="year">
-                </div>
+    <button id="mobile-sidebar-toggle" title="Buka Pengaturan"></button>
 
-                <div class="control-group">
-                    <label for="custom-holidays">Tanggal Khusus (hr/bln : Nama):</label>
-                    <textarea id="custom-holidays" rows="5" placeholder="cth:&#10;1/11 : Ulang Tahun Ibu&#10;12/juni : Ulang Tahun Ayah"></textarea>
+    <aside id="sidebar">
+        <!-- Main Menu Panel (visible by default) -->
+        <div id="sidebar-main-menu" class="sidebar-panel active">
+            <div class="sidebar-header">
+                    <h2>Pengaturan</h2>
                 </div>
+                <nav class="sidebar-nav">
+                    <button data-target-panel="panel-general">Pengaturan Umum</button>
+                    <button data-target-panel="panel-images">Pengaturan Gambar</button>
+                    <button data-target-panel="panel-custom-dates">Tanggal Khusus</button>
+                </nav>
+        </div>
 
-                <div class="control-group">
-                    <label for="hijri-offset">Penyesuaian Kalender Hijriah:</label>
-                    <select id="hijri-offset">
-                        <option value="0" selected>Normal (0)</option>
-                        <option value="1">+1 Hari</option>
-                        <option value="-1">-1 Hari</option>
-                    </select>
+        <!-- Sub-panel for General Settings -->
+        <div id="panel-general" class="sidebar-panel">
+            <div class="sidebar-header">
+                    <button class="back-btn" title="Kembali"></button>
+                    <h3>Pengaturan Umum</h3>
                 </div>
+                <div class="control-group"><label for="year-input">Tahun Kalender:</label><input type="number" id="year-input" name="year"></div>
+                <div class="control-group"><label for="hijri-offset">Penyesuaian Kalender Hijriah:</label><select id="hijri-offset"><option value="0" selected>Normal (0)</option><option value="1">+1 Hari</option><option value="-1">-1 Hari</option></select></div>
+        </div>
 
-                <div class="control-group">
-                    <label for="image-page-select">Ubah Gambar untuk Halaman:</label>
-                    <select id="image-page-select">
-                        <option value="0">Halaman 1 (Jan-Feb)</option>
-                        <option value="1">Halaman 2 (Mar-Apr)</option>
-                        <option value="2">Halaman 3 (Mei-Jun)</option>
-                        <option value="3">Halaman 4 (Jul-Ags)</option>
-                        <option value="4">Halaman 5 (Sep-Okt)</option>
-                        <option value="5">Halaman 6 (Nov-Des)</option>
-                    </select>
+        <!-- Sub-panel for Image Settings -->
+        <div id="panel-images" class="sidebar-panel">
+            <div class="sidebar-header">
+                    <button class="back-btn" title="Kembali"></button>
+                    <h3>Pengaturan Gambar</h3>
                 </div>
-                <div class="control-group">
-                    <button id="upload-image-btn">Unggah Gambar</button>
-                    <input type="file" id="image-upload-input" accept="image/*" class="hidden-file-input">
-                </div>
+                <div class="control-group"><label for="image-page-select">Ubah Gambar untuk Halaman:</label><select id="image-page-select"><option value="0">Halaman 1 (Jan-Feb)</option><option value="1">Halaman 2 (Mar-Apr)</option><option value="2">Halaman 3 (Mei-Jun)</option><option value="3">Halaman 4 (Jul-Ags)</option><option value="4">Halaman 5 (Sep-Okt)</option><option value="5">Halaman 6 (Nov-Des)</option></select></div>
+                <div class="control-group"><button id="upload-image-btn">Unggah Gambar</button><input type="file" id="image-upload-input" accept="image/*" class="hidden-file-input"></div>
                 <div class="control-group slider-group">
                     <label for="image-scale">Skala:</label>
-                    <input type="range" id="image-scale" min="0.5" max="3" step="0.05" value="1">
+                    <div class="slider-input-wrapper">
+                        <input type="range" id="image-scale" min="0.5" max="3" step="0.05" value="1"><input type="number" id="image-scale-number" min="0.5" max="3" step="0.05" value="1">
+                    </div>
                 </div>
                 <div class="control-group slider-group">
                     <label for="image-x">Posisi X:</label>
-                    <input type="range" id="image-x" min="-500" max="500" step="10" value="0">
+                    <div class="slider-input-wrapper">
+                        <input type="range" id="image-x" min="-500" max="500" step="10" value="0"><input type="number" id="image-x-number" min="-500" max="500" step="10" value="0">
+                    </div>
                 </div>
                 <div class="control-group slider-group">
                     <label for="image-y">Posisi Y:</label>
-                    <input type="range" id="image-y" min="-500" max="500" step="10" value="0">
+                    <div class="slider-input-wrapper">
+                        <input type="range" id="image-y" min="-500" max="500" step="10" value="0"><input type="number" id="image-y-number" min="-500" max="500" step="10" value="0">
+                    </div>
                 </div>
+        </div>
 
-                <div class="button-group">
-                    <button id="generate-btn">Buat Kalender</button>
-                    <button id="export-pdf-btn" disabled>Ekspor ke PDF</button>
+        <!-- Sub-panel for Custom Dates -->
+        <div id="panel-custom-dates" class="sidebar-panel">
+            <div class="sidebar-header">
+                    <button class="back-btn" title="Kembali"></button>
+                    <h3>Tanggal Khusus</h3>
                 </div>
-            </section>
-        </aside>
-    </main>
+                <div class="control-group"><label for="custom-holidays">Tanggal Khusus (hr/bln : Nama):</label><textarea id="custom-holidays" rows="5" placeholder="cth:&#10;1/11 : Ulang Tahun Ibu&#10;12/juni : Ulang Tahun Ayah"></textarea></div>
+        </div>
+
+        <!-- Action buttons are now outside the panels to be always visible -->
+        <div class="sidebar-footer">
+            <button id="generate-btn">Buat Kalender</button>
+            <button id="export-pdf-btn" disabled>Ekspor ke PDF</button>
+        </div>
+    </aside>
 
     <script src="js/main.js" type="module"></script>
 </body>
