@@ -1,0 +1,74 @@
+{
+    "2025": [
+        { "month": 0, "day": 29, "name": "Tahun Baru Imlek" },
+        { "month": 2, "day": 29, "name": "Hari Suci Nyepi" },
+        { "month": 3, "day": 18, "name": "Wafat Isa Almasih" },
+        { "month": 3, "day": 20, "name": "Hari Paskah" },
+        { "month": 4, "day": 29, "name": "Kenaikan Isa Almasih" },
+        { "month": 5, "day": 12, "name": "Hari Raya Waisak" }
+    ],
+    "2026": [
+        { "month": 1, "day": 17, "name": "Tahun Baru Imlek" },
+        { "month": 2, "day": 19, "name": "Hari Suci Nyepi" },
+        { "month": 3, "day": 3, "name": "Wafat Isa Almasih" },
+        { "month": 3, "day": 5, "name": "Hari Paskah" },
+        { "month": 4, "day": 14, "name": "Kenaikan Isa Almasih" },
+        { "month": 4, "day": 21, "name": "Hari Raya Waisak" }
+    ],
+    "2027": [
+        { "month": 1, "day": 6, "name": "Tahun Baru Imlek" },
+        { "month": 2, "day": 9, "name": "Hari Suci Nyepi" },
+        { "month": 2, "day": 26, "name": "Wafat Isa Almasih" },
+        { "month": 2, "day": 28, "name": "Hari Paskah" },
+        { "month": 4, "day": 6, "name": "Kenaikan Isa Almasih" },
+        { "month": 4, "day": 10, "name": "Hari Raya Waisak" }
+    ],
+    "2028": [
+        { "month": 0, "day": 26, "name": "Tahun Baru Imlek" },
+        { "month": 2, "day": 26, "name": "Hari Suci Nyepi" },
+        { "month": 3, "day": 14, "name": "Wafat Isa Almasih" },
+        { "month": 3, "day": 16, "name": "Hari Paskah" },
+        { "month": 4, "day": 25, "name": "Kenaikan Isa Almasih" },
+        { "month": 4, "day": 28, "name": "Hari Raya Waisak" }
+    ],
+    "2029": [
+        { "month": 1, "day": 13, "name": "Tahun Baru Imlek" },
+        { "month": 2, "day": 15, "name": "Hari Suci Nyepi" },
+        { "month": 2, "day": 30, "name": "Wafat Isa Almasih" },
+        { "month": 3, "day": 1, "name": "Hari Paskah" },
+        { "month": 4, "day": 10, "name": "Kenaikan Isa Almasih" },
+        { "month": 4, "day": 17, "name": "Hari Raya Waisak" }
+    ],
+    "2030": [
+        { "month": 1, "day": 3, "name": "Tahun Baru Imlek" },
+        { "month": 2, "day": 4, "name": "Hari Suci Nyepi" },
+        { "month": 3, "day": 19, "name": "Wafat Isa Almasih" },
+        { "month": 3, "day": 21, "name": "Hari Paskah" },
+        { "month": 4, "day": 30, "name": "Kenaikan Isa Almasih" },
+        { "month": 4, "day": 6, "name": "Hari Raya Waisak" }
+    ],
+    "2031": [
+        { "month": 0, "day": 23, "name": "Tahun Baru Imlek" },
+        { "month": 2, "day": 23, "name": "Hari Suci Nyepi" },
+        { "month": 3, "day": 11, "name": "Wafat Isa Almasih" },
+        { "month": 3, "day": 13, "name": "Hari Paskah" },
+        { "month": 4, "day": 22, "name": "Kenaikan Isa Almasih" },
+        { "month": 4, "day": 26, "name": "Hari Raya Waisak" }
+    ],
+    "2032": [
+        { "month": 1, "day": 11, "name": "Tahun Baru Imlek" },
+        { "month": 2, "day": 11, "name": "Hari Suci Nyepi" },
+        { "month": 2, "day": 26, "name": "Wafat Isa Almasih" },
+        { "month": 2, "day": 28, "name": "Hari Paskah" },
+        { "month": 4, "day": 6, "name": "Kenaikan Isa Almasih" },
+        { "month": 4, "day": 14, "name": "Hari Raya Waisak" }
+    ],
+    "2033": [
+        { "month": 0, "day": 31, "name": "Tahun Baru Imlek" },
+        { "month": 2, "day": 31, "name": "Hari Suci Nyepi" },
+        { "month": 3, "day": 15, "name": "Wafat Isa Almasih" },
+        { "month": 3, "day": 17, "name": "Hari Paskah" },
+        { "month": 4, "day": 26, "name": "Kenaikan Isa Almasih" },
+        { "month": 5, "day": 3, "name": "Hari Raya Waisak" }
+    ]
+}

@@ -7,7 +7,8 @@
  * @param {number} options.year - The year of the calendar, used for the filename.
  */
 export async function generatePdf({ canvases, year }) {
-    // Access the jsPDF constructor from the global window object created by the UMD script.
+    // Access the jsPDF constructor from the global window object created by the UMD script
+    // This is now guaranteed to exist because main.js awaits the script load.
     const { jsPDF } = window.jspdf;
 
     // A4 dimensions in mm: 210 x 297

@@ -1,0 +1,22 @@
+{
+  "name": "kalender",
+  "version": "1.0.0",
+  "main": "build.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node build.js",
+    "dev": "live-server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "cpx": "^1.5.0",
+    "esbuild": "^0.25.10",
+    "live-server": "^1.2.2"
+  }
+}

@@ -31,7 +31,7 @@ function getJavanesePasaran(date) {
  * @returns {string} The formatted Islamic date (e.g., "17 Dhu al-Hijjah 1445 AH").
  */
 function getIslamicDate(date) {
-    const islamicFormatter = new Intl.DateTimeFormat('en-US-u-ca-islamic', {
+    const islamicFormatter = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
@@ -42,11 +42,24 @@ function getIslamicDate(date) {
 /**
  * Gets a combined object with Javanese and Islamic date information.
  * @param {Date} gregorianDate - The input Gregorian date.
- * @returns {{javanese: string, islamic: string}}
+ * @param {number} [hijriOffset=0] - The day offset for Hijri date adjustment from the UI.
+ * @returns {{javaneseDay: string, islamicDate: string, islamicDayNumber: string}}
  */
-export function getExtraDateInfo(gregorianDate) {
+export function getExtraDateInfo(gregorianDate, hijriOffset = 0) {
+    const adjustedDate = new Date(gregorianDate);
+    if (hijriOffset !== 0) {
+        // For display, if the user selects +1, we show the Hijri date for the *next* Gregorian day.
+        adjustedDate.setDate(adjustedDate.getDate() + hijriOffset);
+    }
+    // Using a separate formatter just for the day number is more reliable
+    // than splitting a formatted string, which can vary between browsers.
+    const dayFormatter = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', {
+        day: 'numeric'
+    });
+
     return {
-        javanese: getJavanesePasaran(gregorianDate),
-        islamic: getIslamicDate(gregorianDate).split(' ')[0], // We only need the day number for the calendar cell
+        javaneseDay: getJavanesePasaran(gregorianDate),
+        islamicDate: getIslamicDate(adjustedDate), // Keep this for potential future use
+        islamicDayNumber: dayFormatter.format(adjustedDate),
     };
 }

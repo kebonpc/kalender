@@ -1,42 +1,122 @@
-/* Styles for UI controls (buttons, inputs) */
+#sidebar {
+    position: sticky;
+    top: var(--spacing-lg);
+    height: calc(100vh - var(--spacing-lg) * 2); /* Full viewport height minus padding */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-left: 0.5rem; /* Space for the scrollbar */
+    padding-right: var(--spacing-md); /* Space on the right */
+    padding-bottom: var(--spacing-lg); /* Space at the bottom */
+}
 
+/* Styles for UI controls (buttons, inputs) */
 .controls {
-    flex: 1;
-    min-width: 300px;
-    background-color: hsl(0 0% 100%);
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px hsla(0, 0%, 0%, 0.1);
-    align-self: flex-start; /* Prevents stretching */
+    /* Remove card styling to unify the sidebar */
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
 }
 
 .control-group {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    gap: calc(var(--spacing-md) / 2);
+    margin-bottom: var(--spacing-lg);
 }
 
 input[type="number"],
 input[type="file"],
+textarea,
+select,
 button {
-    font-size: 1rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    border: 1px solid hsl(0 0% 80%);
+    font-size: 0.9rem;
+    padding: 0.6rem 0.2rem;
+    border-radius: 0;
+    border: none;
+    border-bottom: 2px solid var(--border-color);
+    background-color: transparent;
+    color: var(--text-color);
+    transition: border-color 150ms ease-in-out, box-shadow 150ms ease-in-out;
+    font-family: inherit;
+    -webkit-appearance: none; /* Removes default browser styling */
+    appearance: none;
+}
+
+input[type="number"]:focus,
+input[type="file"]:focus,
+textarea:focus,
+select:focus,
+button:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 1px;
 }
 
 .button-group {
     display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
 }
 
 button {
     cursor: pointer;
+    background-color: transparent;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    font-weight: bold;
+    text-align: center;
+}
+
+button:hover:not(:disabled) {
+    background-color: transparent;
+    color: var(--accent-color-hover);
+    border-color: var(--accent-color-hover);
 }
 
 button:disabled {
     cursor: not-allowed;
     opacity: 0.6;
+}
+
+.slider-group {
+    margin-bottom: 0.5rem;
+}
+
+.hidden-file-input {
+    display: none;
+}
+
+/* --- Sidebar Toggle Button --- */
+#toggle-sidebar-btn {
+    position: absolute;
+    top: 0;
+    right: 0; /* Position on the right edge of the screen */
+    z-index: 1001; /* Above sidebar, below loading overlay */
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 1px 3px var(--shadow-color);
+    transition: transform 300ms ease-in-out, background-color 150ms ease-in-out;
+    font-size: 1.2rem;
+}
+
+#toggle-sidebar-btn:hover {
+    background-color: var(--bg-color-alt);
+}
+
+#toggle-sidebar-btn::after {
+    content: '▶'; /* Arrow points left when sidebar is open */
+    color: var(--text-color);
+}
+
+.sidebar-collapsed #toggle-sidebar-btn {
+    /* No change in position, just the icon */
+}
+
+.sidebar-collapsed #toggle-sidebar-btn::after {
+    content: '☰'; /* Hamburger icon when sidebar is closed */
 }
