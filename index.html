@@ -1,17 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalender Generator</title>
+    <title>Kalender Generator 2025 - Cetak Kalender Jawa & Islam</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Buat dan cetak kalender tahunan kustom Anda dengan tanggal Gregorian, Jawa (Pasaran), dan Islam (Hijriah). Unggah gambar Anda sendiri dan ekspor ke PDF.">
+    <meta name="keywords" content="kalender, generator kalender, kalender 2025, kalender jawa, kalender islam, cetak kalender, kalender pdf, pasaran, hijriah">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://kebonpc.github.io/kalender">
+    <meta property="og:title" content="Kalender Generator 2025 - Cetak Kalender Jawa & Islam">
+    <meta property="og:description" content="Buat dan cetak kalender tahunan kustom Anda dengan tanggal Gregorian, Jawa (Pasaran), dan Islam (Hijriah).">
+    <meta property="og:image" content="https://kebonpc.github.io/kalender/images/canvas.png">
+
     <link rel="icon" type="image/png" href="images/logo.png">
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
     <section class="preview-area">
-        <div id="loading-overlay" class="hidden">
+        <h1 class="visually-hidden">Generator Kalender Cetak dengan Tanggal Jawa dan Islam</h1>
+        <div id="loading-overlay">
             <div class="spinner"></div>
-            <span>Membuat Kalender...</span>
+            <span>Memuat...</span>
         </div>
         <div id="canvas-container">
             <canvas id="page-1" width="1240" height="1754"></canvas> <!-- A4 at 150 DPI -->
@@ -34,6 +47,7 @@
                 <nav class="sidebar-nav">
                     <button data-target-panel="panel-general">Pengaturan Umum</button>
                     <button data-target-panel="panel-images">Pengaturan Gambar</button>
+                    <button data-target-panel="panel-colors">Pengaturan Warna</button>
                     <button data-target-panel="panel-custom-dates">Tanggal Khusus</button>
                 </nav>
         </div>
@@ -46,6 +60,14 @@
                 </div>
                 <div class="control-group"><label for="year-input">Tahun Kalender:</label><input type="number" id="year-input" name="year"></div>
                 <div class="control-group"><label for="hijri-offset">Penyesuaian Kalender Hijriah:</label><select id="hijri-offset"><option value="0" selected>Normal (0)</option><option value="1">+1 Hari</option><option value="-1">-1 Hari</option></select></div>
+                <div class="control-group">
+                    <label for="paper-size-select">Ukuran Kertas PDF:</label>
+                    <select id="paper-size-select"><option value="a4" selected>A4</option><option value="letter">Letter</option><option value="legal">Legal</option></select>
+                </div>
+                <div class="control-group checkbox-group">
+                    <label for="show-logo-toggle">Tampilkan Logo & Label</label>
+                    <input type="checkbox" id="show-logo-toggle" checked>
+                </div>
         </div>
 
         <!-- Sub-panel for Image Settings -->
@@ -83,6 +105,27 @@
                     <h3>Tanggal Khusus</h3>
                 </div>
                 <div class="control-group"><label for="custom-holidays">Tanggal Khusus (hr/bln : Nama):</label><textarea id="custom-holidays" rows="5" placeholder="cth:&#10;1/11 : Ulang Tahun Ibu&#10;12/juni : Ulang Tahun Ayah"></textarea></div>
+        </div>
+
+        <!-- Sub-panel for Color Settings -->
+        <div id="panel-colors" class="sidebar-panel">
+            <div class="sidebar-header">
+                <button class="back-btn" title="Kembali"></button>
+                <h3>Pengaturan Warna Kalender</h3>
+            </div>
+            <div class="control-group color-picker-group"><label for="year-color-picker">Warna Teks Tahun</label><input type="color" id="year-color-picker" value="#ffffff"></div>
+            <div class="control-group color-picker-group"><label for="month-color-picker">Warna Teks Bulan</label><input type="color" id="month-color-picker" value="#333333"></div>
+            <div class="control-group color-picker-group"><label for="day-names-bg-color-picker">Warna Latar Nama Hari</label><input type="color" id="day-names-bg-color-picker" value="#f5f5f5"></div>
+            <div class="control-group color-picker-group"><label for="day-names-color-picker">Warna Teks Nama Hari</label><input type="color" id="day-names-color-picker" value="#555555"></div>
+            <div class="control-group color-picker-group"><label for="weekday-color-picker">Warna Teks Hari Biasa</label><input type="color" id="weekday-color-picker" value="#333333"></div>
+            <div class="control-group color-picker-group"><label for="friday-color-picker">Warna Teks Hari Jumat</label><input type="color" id="friday-color-picker" value="#28a745"></div>
+            <div class="control-group color-picker-group"><label for="holiday-color-picker">Warna Teks Hari Libur</label><input type="color" id="holiday-color-picker" value="#d9534f"></div>
+            <div class="control-group color-picker-group"><label for="custom-holiday-color-picker">Warna Lingkaran Tgl. Khusus</label><input type="color" id="custom-holiday-color-picker" value="#d9534f"></div>
+            <div class="control-group color-picker-group"><label for="filler-day-color-picker">Warna Teks Tgl. Pengisi</label><input type="color" id="filler-day-color-picker" value="#cccccc"></div>
+            <div class="control-group color-picker-group"><label for="sub-date-color-picker">Warna Teks Tgl. Jawa/Hijriah</label><input type="color" id="sub-date-color-picker" value="#6c757d"></div>
+            <div class="control-group color-picker-group"><label for="arabic-number-color-picker">Warna Angka Arab</label><input type="color" id="arabic-number-color-picker" value="#6c757d"></div>
+            <div class="control-group color-picker-group"><label for="notes-color-picker">Warna Teks Catatan Libur</label><input type="color" id="notes-color-picker" value="#555555"></div>
+            <div class="control-group color-picker-group"><label for="overlay-color-picker">Warna Latar Bawah</label><input type="color" id="overlay-color-picker" value="#ffffff"></div>
         </div>
 
         <!-- Action buttons are now outside the panels to be always visible -->

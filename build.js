@@ -24,6 +24,7 @@ async function build() {
         sourcemap: true,
         outdir: `${DIST_DIR}/assets`,
         entryNames: '[name].min',
+        drop: ['console'],
     }).catch(() => process.exit(1));
 
     // 3. Copy static assets

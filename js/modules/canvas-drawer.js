@@ -1,6 +1,6 @@
 /* All canvas drawing logic will go here */
 
-import { getExtraDateInfo } from './calendar-converter.js';
+import { getExtraDateInfo, getMonthSpanInfo } from './calendar-converter.js';
 import { getHolidaysForMonth } from './holiday-data.js';
 
 // --- Constants for layout and styling ---
@@ -11,6 +11,16 @@ const DEFAULT_MONTH_NAMES = [
     "Januari", "Februari", "Maret", "April", "Mei", "Juni",
     "Juli", "Agustus", "September", "Oktober", "November", "Desember"
 ];
+
+/**
+ * Converts a Western Arabic numeral string to an Eastern Arabic numeral string.
+ * @param {string|number} number - The number to convert.
+ * @returns {string} The number in Eastern Arabic numerals.
+ */
+function toEasternArabicNumerals(number) {
+    const easternNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    return String(number).split('').map(digit => easternNumerals[parseInt(digit, 10)]).join('');
+}
 
 /**
  * Draws a single month's grid onto the canvas.
@@ -26,8 +36,9 @@ const DEFAULT_MONTH_NAMES = [
  * @param {Map<number, string>} [options.customHolidaysForMonth] - Optional map of custom holidays for this month.
  * @param {string[]} options.dayNames - Array of day names.
  * @param {number} options.hijriOffset - The day offset for Hijri date adjustment.
+ * @param {object} options.colors - The theme colors.
  */
-function drawMonth({ ctx, year, month, x, y, width, monthNames, dayNames, maxGridHeight, customHolidaysForMonth, hijriOffset }) {
+function drawMonth({ ctx, year, month, x, y, width, monthNames, dayNames, maxGridHeight, customHolidaysForMonth, hijriOffset, colors }) {
     const headerHeight = 80;
     const dayHeaderHeight = 40;
     const gridStartY = y + headerHeight + dayHeaderHeight;
@@ -41,9 +52,10 @@ function drawMonth({ ctx, year, month, x, y, width, monthNames, dayNames, maxGri
     const gridHeight = numRows * cellHeight;
 
     const holidays = getHolidaysForMonth(year, month, customHolidaysForMonth, hijriOffset);
+    const monthSpans = getMonthSpanInfo(year, month, hijriOffset);
 
     // 1. Draw Month Name
-    ctx.fillStyle = '#333';
+    ctx.fillStyle = colors.month;
     ctx.font = 'bold 32px sans-serif';
     ctx.textAlign = 'left';
     const monthText = monthNames[month];
@@ -51,18 +63,31 @@ function drawMonth({ ctx, year, month, x, y, width, monthNames, dayNames, maxGri
     const textY = y + headerHeight / 1.5;
     ctx.fillText(monthText, textX, textY);
 
+    // Draw Islamic and Javanese month spans on the right
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'right';
+    const spanX = x + width - 20; // Add some padding from the right
+    const islamicSpanY = y + headerHeight / 1.5; // Vertically center with month name
+    ctx.fillText(monthSpans.islamic, spanX, islamicSpanY);
+
     // Draw a bold bottom border for the month name header
-    ctx.fillStyle = '#f5f5f5'; // Blend with the day names background
+    ctx.fillStyle = colors.dayNamesBg; // Blend with the day names background
     const borderHeight = 4; // Make the border bigger
     ctx.fillRect(x, y + headerHeight - borderHeight, width, borderHeight);
 
     // 2. Draw Day Name Headers (Sun, Mon, etc.)
-    ctx.fillStyle = '#f5f5f5'; // A light grey for the day header
+    ctx.fillStyle = colors.dayNamesBg; // A light grey for the day header
     ctx.fillRect(x, y + headerHeight, width, dayHeaderHeight);
     ctx.font = 'bold 18px sans-serif';
     ctx.textAlign = 'center';
     for (let i = 0; i < dayNames.length; i++) {
-        ctx.fillStyle = (i === 0) ? '#d9534f' : '#555'; // Red for Sunday
+        if (i === 0) { // Sunday
+            ctx.fillStyle = colors.holiday;
+        } else if (i === 5) { // Friday
+            ctx.fillStyle = colors.friday;
+        } else {
+            ctx.fillStyle = colors.dayNames;
+        }
         ctx.fillText(dayNames[i], x + (i * cellWidth) + (cellWidth / 2), y + headerHeight + (dayHeaderHeight / 1.5));
     }
 
@@ -107,19 +132,20 @@ function drawMonth({ ctx, year, month, x, y, width, monthNames, dayNames, maxGri
             // ctx.strokeRect(cellX, cellY, cellWidth, cellHeight);
 
             // --- Draw date numbers and extra info inside the cell ---
-            const extraInfo = getExtraDateInfo(date, hijriOffset);
 
             // Determine the color for the main date number
-            let mainDateColor = '#333'; // Default color
+            let mainDateColor = colors.weekday; // Default color
             if (isFillerDay) {
-                mainDateColor = '#ccc';
+                mainDateColor = colors.fillerDay;
             } else if (isPublicHoliday || col === 0) {
-                mainDateColor = '#d9534f'; // Red for public holidays and Sundays
+                mainDateColor = colors.holiday; // Red for public holidays and Sundays
+            } else if (col === 5) {
+                mainDateColor = colors.friday; // Green for Fridays
             }
 
             // Draw a red circle for custom holidays (behind the text)
             if (isCustomHoliday) {
-                ctx.strokeStyle = '#d9534f';
+                ctx.strokeStyle = colors.customHoliday;
                 ctx.lineWidth = 3;
                 ctx.beginPath();
                 ctx.arc(cellX + cellWidth / 2, cellY + cellHeight / 2 - 8, 18, 0, 2 * Math.PI);
@@ -134,13 +160,21 @@ function drawMonth({ ctx, year, month, x, y, width, monthNames, dayNames, maxGri
 
             // B. Draw Islamic and Javanese dates (centered, lower part of the cell)
             if (!isFillerDay) {
+                const extraInfo = getExtraDateInfo(date, hijriOffset);
                 const javaneseText = extraInfo.javaneseDay.toLowerCase();
                 const combinedText = `${extraInfo.islamicDayNumber} ${javaneseText}`;
                 
                 ctx.textAlign = 'center';
                 ctx.font = '12px sans-serif';
-                ctx.fillStyle = '#6c757d'; // A nice gray color
+                ctx.fillStyle = colors.subDate; // A nice gray color
                 ctx.fillText(combinedText, cellX + cellWidth / 2, cellY + cellHeight / 2 + 14);
+
+                // C. Draw Eastern Arabic numeral for Islamic day (top right)
+                const arabicDayNumber = toEasternArabicNumerals(extraInfo.islamicDayNumber);
+                ctx.textAlign = 'right';
+                ctx.font = '14px sans-serif';
+                ctx.fillStyle = colors.arabicNumber;
+                ctx.fillText(arabicDayNumber, cellX + cellWidth - 8, cellY + 16);
             }
         }
     }
@@ -148,7 +182,7 @@ function drawMonth({ ctx, year, month, x, y, width, monthNames, dayNames, maxGri
     // 4. Draw Holiday Notes
     if (holidays.size > 0) {
         ctx.textAlign = 'left';
-        ctx.fillStyle = '#555';
+        ctx.fillStyle = colors.notes;
         ctx.font = '12px sans-serif';
         let noteY = y + maxGridHeight + 20; // Start drawing notes below the grid
 
@@ -160,6 +194,21 @@ function drawMonth({ ctx, year, month, x, y, width, monthNames, dayNames, maxGri
         }
     }
 }
+
+/**
+ * Converts a hex color string to an rgba string.
+ * @param {string} hex - The hex color string (e.g., '#ffffff').
+ * @param {number} alpha - The alpha transparency value (0-1).
+ * @returns {string} The resulting rgba color string.
+ */
+function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 
 /**
  * Main exported function to draw a full calendar page (3 months).
@@ -174,8 +223,20 @@ function drawMonth({ ctx, year, month, x, y, width, monthNames, dayNames, maxGri
  * @param {object} [options.imageTransform] - Object with x, y, scale for image transformation.
  * @param {number} [options.hijriOffset] - The day offset for Hijri date adjustment.
  * @param {HTMLImageElement|null} options.logoImage - The logo image to draw on the page.
+ * @param {string} [options.paperSize] - The paper size format (e.g., 'a4', 'letter').
+ * @param {boolean} [options.showLogo] - Whether to show the logo and label.
+ * @param {object} [options.colors] - The theme colors.
  */
-export function drawCalendarPage({ canvas, year, startMonth, image, logoImage, monthNames = DEFAULT_MONTH_NAMES, dayNames = DEFAULT_DAY_NAMES, customHolidays, imageTransform = { x: 0, y: 0, scale: 1 }, hijriOffset }) {
+export function drawCalendarPage({ canvas, year, startMonth, image, logoImage, monthNames = DEFAULT_MONTH_NAMES, dayNames = DEFAULT_DAY_NAMES, customHolidays, imageTransform = { x: 0, y: 0, scale: 1 }, hijriOffset, paperSize, showLogo = true, colors = {} }) {
+    // Provide default colors if none are passed
+    const themeColors = {
+        year: '#ffffff', month: '#333333', dayNamesBg: '#f5f5f5', dayNames: '#555555',
+        weekday: '#333333', friday: '#28a745', holiday: '#d9534f', customHoliday: '#d9534f', arabicNumber: '#6c757d',
+        fillerDay: '#cccccc', subDate: '#6c757d', notes: '#555555',
+        overlay: '#ffffff',
+        ...colors
+    };
+
     const ctx = canvas.getContext('2d');
 
     // Clear canvas and set a white background
@@ -217,10 +278,9 @@ export function drawCalendarPage({ canvas, year, startMonth, image, logoImage, m
     const waveAmplitude = 80;
     const gradientEndY = curveStartY - waveAmplitude; // The highest point of the wave
 
-    const gradient = ctx.createLinearGradient(0, canvas.height, 0, gradientEndY);
-    gradient.addColorStop(0, 'white');
-    gradient.addColorStop(0.8, 'white');
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    const gradient = ctx.createLinearGradient(0, canvas.height, 0, gradientEndY);    gradient.addColorStop(0, themeColors.overlay);
+    gradient.addColorStop(0.8, themeColors.overlay);
+    gradient.addColorStop(1, hexToRgba(themeColors.overlay, 0));
 
     ctx.beginPath();
     ctx.moveTo(0, canvas.height);
@@ -244,14 +304,23 @@ export function drawCalendarPage({ canvas, year, startMonth, image, logoImage, m
     ctx.shadowBlur = 15;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
-    ctx.fillStyle = 'white';
+    ctx.fillStyle = themeColors.year;
     ctx.font = 'bold 48px sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText(`KALENDER ${year}`, PADDING, calendarAreaY - 40);
     ctx.restore();
 
+    // Draw paper size at the bottom left
+    if (paperSize && startMonth === 0) {
+        ctx.fillStyle = '#aaa';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'left';
+        const paperSizeText = paperSize.toUpperCase();
+        ctx.fillText(paperSizeText, PADDING, canvas.height - PADDING + 12);
+    }
+
     // Draw logo at the bottom right
-    if (logoImage) {
+    if (showLogo && logoImage) {
         const logoSize = 60;
         const logoX = canvas.width - PADDING - logoSize;
         const logoY = canvas.height - PADDING - logoSize;
@@ -294,7 +363,8 @@ export function drawCalendarPage({ canvas, year, startMonth, image, logoImage, m
             dayNames,
             maxGridHeight,
             customHolidaysForMonth: customHolidays ? customHolidays.get(currentMonth) : null,
-            hijriOffset
+            hijriOffset,
+            colors: themeColors
         });
     }
 }

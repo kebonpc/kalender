@@ -63,35 +63,38 @@ function loadScript(url) {
  */
 async function generateCalendar() {
     console.log("Generating calendar...");
-    setLoading(true);
+    setLoading(true, 'Membuat Kalender...');
 
-    try {
-        const { year, imageFiles, canvases, customHolidays, imageTransforms, hijriOffset } = getUIState();
+    // Use requestAnimationFrame to ensure the loader is painted before heavy work begins.
+    requestAnimationFrame(async () => {
+        try {
+            const { year, imageFiles, canvases, customHolidays, imageTransforms, hijriOffset, paperSize, showLogo, colors } = getUIState();
 
-        const loadedImages = await Promise.all(imageFiles.map(file => loadImage(file)));
-        const parsedCustomHolidays = parseCustomHolidays(customHolidays);
+            const loadedImages = await Promise.all(imageFiles.map(file => loadImage(file)));
+            const parsedCustomHolidays = parseCustomHolidays(customHolidays);
 
-        // Find the last valid uploaded image to use as a fallback for initial empty slots.
-        let lastValidImage = loadedImages.slice().reverse().find(img => img !== null) || defaultImage;
+            // Find the last valid uploaded image to use as a fallback for initial empty slots.
+            let lastValidImage = loadedImages.slice().reverse().find(img => img !== null) || defaultImage;
 
-        // Loop through the 6 pages (canvases)
-        for (let i = 0; i < canvases.length; i++) {
-            const canvas = canvases[i];
-            const startMonth = i * 2; // 0, 2, 4, 6, 8, 10
+            // Loop through the 6 pages (canvases)
+            for (let i = 0; i < canvases.length; i++) {
+                const canvas = canvases[i];
+                const startMonth = i * 2; // 0, 2, 4, 6, 8, 10
 
-            // If there's a new image for this page, update the last valid image.
-            if (loadedImages[i]) {
-                lastValidImage = loadedImages[i];
+                // If there's a new image for this page, update the last valid image.
+                if (loadedImages[i]) {
+                    lastValidImage = loadedImages[i];
+                }
+                const imageForPage = lastValidImage;
+                drawCalendarPage({ canvas, year, startMonth, image: imageForPage, logoImage: logoImage, customHolidays: parsedCustomHolidays, imageTransform: imageTransforms[i], hijriOffset, paperSize, showLogo, colors });
             }
-            const imageForPage = lastValidImage;
-            drawCalendarPage({ canvas, year, startMonth, image: imageForPage, logoImage: logoImage, customHolidays: parsedCustomHolidays, imageTransform: imageTransforms[i], hijriOffset });
-        }
 
-        setExportButtonEnabled(true);
-        console.log("Calendar generation complete.");
-    } finally {
-        setLoading(false);
-    }
+            setExportButtonEnabled(true);
+            console.log("Calendar generation complete.");
+        } finally {
+            setLoading(false);
+        }
+    });
 }
 
 /**
@@ -101,10 +104,10 @@ async function exportCalendar() {
     console.log("Exporting to PDF...");
     setExportButtonBusy(true);
 
-    const { year, canvases } = getUIState();
+    const { year, canvases, paperSize } = getUIState();
 
     try {
-        await generatePdf({ canvases, year });
+        await generatePdf({ canvases, year, paperSize });
     } catch (error) {
         console.error("Failed to export PDF:", error);
         alert("Terjadi kesalahan saat mengekspor PDF. Silakan coba lagi.");

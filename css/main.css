@@ -130,6 +130,19 @@ body {
     display: none;
 }
 
+/* For accessibility and SEO: hide an element visually but keep it available for screen readers */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 /* --- Mobile Toggle Button --- */
 #mobile-sidebar-toggle {
     display: none; /* Hidden by default, shown on mobile */
@@ -174,6 +187,11 @@ body {
 
     #mobile-sidebar-toggle {
         display: block; /* Show the toggle button */
+    }
+
+    .desktop-only-control {
+        /* Hide controls that are not relevant for mobile preview */
+        display: none;
     }
 }
 

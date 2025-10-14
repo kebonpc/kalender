@@ -12,6 +12,20 @@ Aplikasi web sisi-klien untuk membuat kalender tahunan yang dapat dicetak. Aplik
 -   **Ekspor ke PDF**: Menghasilkan dokumen PDF multi-halaman berkualitas tinggi yang siap untuk dicetak.
 -   **Fungsi Offline**: Dapat digunakan tanpa koneksi internet.
 
+## Detail Implementasi & Metode Perhitungan
+
+Untuk memastikan akurasi, generator ini menggunakan beberapa metode perhitungan:
+
+-   **Kalender Jawa**:
+    -   **Pasaran**: Hari Pasaran (Legi, Pahing, Pon, Wage, Kliwon) dihitung menggunakan operasi modulo terhadap jumlah hari yang telah berlalu sejak epoch tetap, memastikan siklus 5 hari yang konsisten.
+
+-   **Kalender Islam (Hijriah)**:
+    -   Perhitungan tanggal utama menggunakan API `Intl.DateTimeFormat` bawaan browser dengan kalender `islamic-umalqura` yang terstandarisasi.
+    -   Sebuah pemetaan kustom digunakan untuk menyesuaikan nama-nama bulan (misalnya, "Syakban" menjadi "Sya'ban") agar sesuai dengan ejaan yang umum digunakan di Indonesia.
+
+-   **Hari Libur Nasional**:
+    -   Menggunakan pendekatan hybrid: hari libur dengan tanggal tetap (seperti 1 Januari), data yang telah dihitung sebelumnya dari `holidays.json` untuk hari libur tak tetap (seperti Nyepi & Waisak), dan perhitungan algoritmis untuk hari libur Islam berdasarkan tanggalnya di kalender Hijriah.
+
 ## Prasyarat
 
 Pastikan Anda memiliki [Node.js](https://nodejs.org/) (yang sudah termasuk `npm`) terinstal di sistem Anda.

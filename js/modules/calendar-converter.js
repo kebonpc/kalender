@@ -63,3 +63,53 @@ export function getExtraDateInfo(gregorianDate, hijriOffset = 0) {
         islamicDayNumber: dayFormatter.format(adjustedDate),
     };
 }
+
+const ISLAMIC_MONTH_NAMES = [
+    "Muharam", "Safar", "Rabiul Awal", "Rabiul Akhir",
+    "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban",
+    "Ramadan", "Syawal", "Zulkaidah", "Zulhijah"
+];
+
+function getIslamicDateParts(date) {
+    const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { year: 'numeric', month: 'numeric' });
+    const parts = formatter.formatToParts(date);
+    const year = parseInt(parts.find(p => p.type === 'year').value, 10);
+    const month = parseInt(parts.find(p => p.type === 'month').value, 10);
+    return { year, month };
+}
+/**
+ * Gets the formatted month/year string for the Islamic calendar,
+ * handling cases where a Gregorian month spans two different months.
+ * @param {number} year - The Gregorian year.
+ * @param {number} month - The Gregorian month index (0-11).
+ * @param {number} hijriOffset - The day offset for Hijri date adjustment.
+ * @returns {string} The formatted month span string.
+ */
+function getFormattedMonthSpan(year, month, hijriOffset) {
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0);
+
+    if (hijriOffset !== 0) {
+        startDate.setDate(startDate.getDate() + hijriOffset);
+        endDate.setDate(endDate.getDate() + hijriOffset);
+    }
+
+    const startParts = getIslamicDateParts(startDate);
+    const endParts = getIslamicDateParts(endDate);
+
+    const startMonthName = ISLAMIC_MONTH_NAMES[startParts.month - 1];
+    const endMonthName = ISLAMIC_MONTH_NAMES[endParts.month - 1];
+    const endYearFormatted = `${endParts.year} H`;
+
+    if (startParts.month === endParts.month && startParts.year === endParts.year) {
+        return `${startMonthName} ${endYearFormatted}`;
+    }
+
+    return `${startMonthName} - ${endMonthName} ${endYearFormatted}`;
+}
+
+export function getMonthSpanInfo(year, month, hijriOffset = 0) {
+    return {
+        islamic: getFormattedMonthSpan(year, month, hijriOffset),
+    };
+}

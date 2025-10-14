@@ -85,3 +85,9 @@ button:disabled {
     width: 60px;
     text-align: center;
 }
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+}

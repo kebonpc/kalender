@@ -8,6 +8,8 @@ const generateBtn = document.getElementById('generate-btn');
 const exportPdfBtn = document.getElementById('export-pdf-btn');
 const customHolidaysTextarea = document.getElementById('custom-holidays');
 const hijriOffsetSelect = document.getElementById('hijri-offset');
+const paperSizeSelect = document.getElementById('paper-size-select');
+const showLogoToggle = document.getElementById('show-logo-toggle');
 
 const imagePageSelect = document.getElementById('image-page-select');
 const uploadImageBtn = document.getElementById('upload-image-btn');
@@ -20,6 +22,23 @@ const xNumberInput = document.getElementById('image-x-number');
 const yNumberInput = document.getElementById('image-y-number');
 const loadingOverlay = document.getElementById('loading-overlay');
 const mobileToggleBtn = document.getElementById('mobile-sidebar-toggle');
+
+// Color Picker elements
+const colorPickers = {
+    year: document.getElementById('year-color-picker'),
+    month: document.getElementById('month-color-picker'),
+    dayNamesBg: document.getElementById('day-names-bg-color-picker'),
+    dayNames: document.getElementById('day-names-color-picker'),
+    weekday: document.getElementById('weekday-color-picker'),
+    friday: document.getElementById('friday-color-picker'),
+    holiday: document.getElementById('holiday-color-picker'),
+    customHoliday: document.getElementById('custom-holiday-color-picker'),
+    fillerDay: document.getElementById('filler-day-color-picker'),
+    subDate: document.getElementById('sub-date-color-picker'),
+    arabicNumber: document.getElementById('arabic-number-color-picker'),
+    notes: document.getElementById('notes-color-picker'),
+    overlay: document.getElementById('overlay-color-picker'),
+};
 
 // Sidebar navigation elements
 const sidebarPanels = document.querySelectorAll('.sidebar-panel');
@@ -34,6 +53,12 @@ const canvases = [
     document.getElementById('page-5'),
     document.getElementById('page-6'),
 ];
+
+const PAPER_DIMENSIONS = {
+    a4: { width: 1240, height: 1754 },
+    letter: { width: 1275, height: 1650 },
+    legal: { width: 1275, height: 2100 },
+};
 
 const NUM_PAGES = 6;
 let pageImageStates = Array(NUM_PAGES).fill(null).map(() => ({
@@ -69,6 +94,18 @@ function navigateToPanel(panelId) {
 }
 
 /**
+ * Updates the width and height of all canvas elements based on the selected paper size.
+ * @param {string} paperSize - The selected paper size (e.g., 'a4', 'letter').
+ */
+function updateCanvasDimensions(paperSize) {
+    const dimensions = PAPER_DIMENSIONS[paperSize] || PAPER_DIMENSIONS.a4;
+    canvases.forEach(canvas => {
+        canvas.width = dimensions.width;
+        canvas.height = dimensions.height;
+    });
+}
+
+/**
  * Sets a CSS variable for the actual viewport height to solve mobile browser issues.
  */
 function setViewportHeight() {
@@ -89,6 +126,9 @@ export function initUI({ onGenerate, onExport }) {
 
     // Set default year to the current year
     yearInput.value = NOW.getFullYear();
+
+    // Set initial canvas dimensions based on default paper size
+    updateCanvasDimensions(paperSizeSelect.value);
 
     // Attach event listener to the generate button
     generateBtn.addEventListener('click', onGenerate);
@@ -118,6 +158,19 @@ export function initUI({ onGenerate, onExport }) {
 
     hijriOffsetSelect.addEventListener('change', onGenerate);
 
+    paperSizeSelect.addEventListener('change', (e) => {
+        updateCanvasDimensions(e.target.value);
+        // Regenerate the calendar to apply the new dimensions
+        onGenerate();
+    });
+
+    showLogoToggle.addEventListener('change', onGenerate);
+
+    // Add event listeners for all color pickers
+    Object.values(colorPickers).forEach(picker => {
+        picker.addEventListener('input', debounce(onGenerate, 200));
+    });
+
     imagePageSelect.addEventListener('change', (e) => {
         selectedImagePageIndex = parseInt(e.target.value, 10);
         updateSlidersFromTransform(pageImageStates[selectedImagePageIndex].transform);
@@ -131,6 +184,12 @@ export function initUI({ onGenerate, onExport }) {
             debouncedGenerate();
         });
     });
+
+    // Automatically regenerate calendar when custom holidays are changed
+    customHolidaysTextarea.addEventListener('input', debounce(onGenerate, 500));
+
+    // Automatically regenerate calendar when the year is changed
+    yearInput.addEventListener('input', debounce(onGenerate, 500));
 
     // --- Two-way binding for sliders and number inputs ---
     const sliderNumberPairs = [
@@ -182,7 +241,7 @@ function updateTransformFromSliders(transform) {
 
 /**
  * Gets the current values from the UI controls.
- * @returns {{year: number, imageFiles: (File | null)[], canvases: HTMLCanvasElement[], customHolidays: string, imageTransforms: object[], hijriOffset: number}}
+ * @returns {{year: number, imageFiles: (File | null)[], canvases: HTMLCanvasElement[], customHolidays: string, imageTransforms: object[], hijriOffset: number, paperSize: string, showLogo: boolean, colors: object}}
  */
 export function getUIState() {
     const year = parseInt(yearInput.value, 10) || NOW.getFullYear();
@@ -190,8 +249,15 @@ export function getUIState() {
     const imageTransforms = pageImageStates.map(state => state.transform);
     const customHolidays = customHolidaysTextarea.value;
     const hijriOffset = parseInt(hijriOffsetSelect.value, 10);
+    const paperSize = paperSizeSelect.value;
+    const showLogo = showLogoToggle.checked;
 
-    return { year, imageFiles, canvases, customHolidays, imageTransforms, hijriOffset };
+    const colors = {};
+    for (const key in colorPickers) {
+        colors[key] = colorPickers[key].value;
+    }
+
+    return { year, imageFiles, canvases, customHolidays, imageTransforms, hijriOffset, paperSize, showLogo, colors };
 }
 
 /**
@@ -219,9 +285,11 @@ export function setExportButtonBusy(isBusy) {
 /**
  * Shows or hides the main loading indicator over the preview area.
  * @param {boolean} visible - True to show, false to hide.
+ * @param {string} [text] - Optional text to display on the loader.
  */
-export function setLoading(visible) {
+export function setLoading(visible, text = 'Membuat Kalender...') {
     if (visible) {
+        loadingOverlay.querySelector('span').textContent = text;
         loadingOverlay.classList.remove('hidden');
     } else {
         loadingOverlay.classList.add('hidden');

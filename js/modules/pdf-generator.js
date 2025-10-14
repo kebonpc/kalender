@@ -5,17 +5,17 @@
  * @param {object} options
  * @param {HTMLCanvasElement[]} options.canvases - An array of canvas elements to add as pages.
  * @param {number} options.year - The year of the calendar, used for the filename.
+ * @param {string} options.paperSize - The paper size format (e.g., 'a4', 'letter').
  */
-export async function generatePdf({ canvases, year }) {
+export async function generatePdf({ canvases, year, paperSize }) {
     // Access the jsPDF constructor from the global window object created by the UMD script
     // This is now guaranteed to exist because main.js awaits the script load.
     const { jsPDF } = window.jspdf;
 
-    // A4 dimensions in mm: 210 x 297
     const doc = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: 'a4'
+        format: paperSize || 'a4'
     });
 
     const pageWidth = doc.internal.pageSize.getWidth();
